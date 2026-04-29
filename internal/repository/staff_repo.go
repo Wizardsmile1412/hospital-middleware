@@ -13,6 +13,7 @@ type StaffRepository interface {
 	GetHospitalBySlug(ctx context.Context, slug string) (*model.Hospital, error)
 	CreateStaff(ctx context.Context, username, passwordHash, hospitalID string) (string, error)
 	GetStaffByUsernameAndHospital(ctx context.Context, username, hospitalID string) (*model.Staff, error)
+	GetStaffByID(ctx context.Context, id string) (*model.Staff, error)
 }
 
 type staffRepo struct {
@@ -42,17 +43,33 @@ func (r *staffRepo) CreateStaff(ctx context.Context, username, passwordHash, hos
 	var id string
 	err := r.db.QueryRow(ctx,
 		`INSERT INTO staff (username, password_hash, hospital_id)
-		 VALUES ($1, $2, $3)
-		 RETURNING id`,
+		VALUES ($1, $2, $3)
+		RETURNING id`,
 		username, passwordHash, hospitalID,
 	).Scan(&id)
 	return id, err
 }
 
+func (r *staffRepo) GetStaffByID(ctx context.Context, id string) (*model.Staff, error) {
+	row := r.db.QueryRow(ctx,
+		`SELECT id, username, password_hash, hospital_id, created_at
+		FROM staff WHERE id = $1`, id)
+
+	var s model.Staff
+	err := row.Scan(&s.ID, &s.Username, &s.PasswordHash, &s.HospitalID, &s.CreatedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &s, nil
+}
+
 func (r *staffRepo) GetStaffByUsernameAndHospital(ctx context.Context, username, hospitalID string) (*model.Staff, error) {
 	row := r.db.QueryRow(ctx,
 		`SELECT id, username, password_hash, hospital_id, created_at
-		 FROM staff WHERE username = $1 AND hospital_id = $2`,
+		FROM staff WHERE username = $1 AND hospital_id = $2`,
 		username, hospitalID)
 
 	var s model.Staff

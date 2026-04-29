@@ -11,15 +11,15 @@ type Staff struct {
 }
 
 type CreateStaffRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Hospital string `json:"hospital" binding:"required"`
+	Username     string `json:"username" binding:"required"`
+	Password     string `json:"password" binding:"required"`
+	HospitalSlug string `json:"hospital_slug" binding:"required"`
 }
 
 type LoginRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Hospital string `json:"hospital" binding:"required"`
+	Username     string `json:"username" binding:"required"`
+	Password     string `json:"password" binding:"required"`
+	HospitalSlug string `json:"hospital_slug" binding:"required"`
 }
 
 type TokenResponse struct {
