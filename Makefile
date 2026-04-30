@@ -1,4 +1,4 @@
-.PHONY: run build test docker-up docker-down migrate-up migrate-down
+.PHONY: run build test test-coverage docker-up docker-down migrate-up migrate-down
 
 run:
 	go run ./cmd/main.go
@@ -8,6 +8,10 @@ build:
 
 test:
 	go test -v ./...
+
+test-coverage:
+	go test -coverprofile=coverage.out ./...
+	go tool cover -func=coverage.out
 
 docker-up:
 	docker compose up --build

@@ -121,8 +121,10 @@ Database migrations and seed data run automatically on startup.
 ### 4. Verify it's running
 
 ```bash
-curl http://localhost/api/v1/health
-# Expected: {"status": "ok"}
+curl -X POST http://localhost/api/v1/staff/create \
+  -H "Content-Type: application/json" \
+  -d '{"username":"test","password":"test123","hospital_slug":"hospital-a"}'
+# Expected: 201 Created
 ```
 
 ---
@@ -184,7 +186,7 @@ curl -X POST http://localhost/api/v1/staff/create \
   -d '{
     "username": "nurse_somjai",
     "password": "secret123",
-    "hospital": "hospital-a"
+    "hospital_slug": "hospital-a"
   }'
 ```
 
@@ -197,7 +199,7 @@ curl -X POST http://localhost/api/v1/staff/login \
   -d '{
     "username": "nurse_somjai",
     "password": "secret123",
-    "hospital": "hospital-a"
+    "hospital_slug": "hospital-a"
   }'
 ```
 
@@ -227,8 +229,8 @@ make test
 make test-coverage
 
 # Run specific package tests
-go test ./internal/service/...
-go test ./internal/handler/...
+go test -v ./internal/service/...
+go test -v ./internal/handler/...
 ```
 
 ---
