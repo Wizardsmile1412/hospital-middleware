@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 
 	"github.com/Wizardsmile1412/hospital-middleware/internal/client"
 	"github.com/Wizardsmile1412/hospital-middleware/internal/model"
@@ -26,20 +27,22 @@ func (s *patientService) SearchPatients(ctx context.Context, params model.Search
 	if params.NationalID != "" {
 		patient, err := s.hospitalClient.SearchByNationalID(ctx, params.NationalID)
 		if err != nil {
-			return nil, err
+			log.Printf("hospital API error for national_id, falling back to DB: %v", err)
+		} else if resp := buildResponse(patient, params.HospitalID); resp.Total > 0 {
+			return resp, nil
 		}
-		return buildResponse(patient, params.HospitalID), nil
 	}
 
 	if params.PassportID != "" {
 		patient, err := s.hospitalClient.SearchByPassportID(ctx, params.PassportID)
 		if err != nil {
-			return nil, err
+			log.Printf("hospital API error for passport_id, falling back to DB: %v", err)
+		} else if resp := buildResponse(patient, params.HospitalID); resp.Total > 0 {
+			return resp, nil
 		}
-		return buildResponse(patient, params.HospitalID), nil
 	}
 
-	// All other filters → query our own DB (fast, reliable, always hospital-scoped)
+	// Fallback: query our own DB (also handles cases where external API errored or returned no result)
 	patients, err := s.repo.SearchPatients(ctx, params)
 	if err != nil {
 		return nil, err

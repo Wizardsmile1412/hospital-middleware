@@ -27,7 +27,7 @@ This system acts as a middleware layer between hospital staff and multiple Hospi
 **Key design decisions:**
 - Patient data is stored in the system's own PostgreSQL database for fast, reliable queries
 - Hospital staff are scoped to their hospital via JWT tokens — enforced at the service layer
-- Searching by `national_id` or `passport_id` triggers a real-time lookup against the Hospital's external API
+- Searching by `national_id` or `passport_id` triggers a real-time lookup against the Hospital's external API, with automatic fallback to the local database if the external API is unavailable or returns no result
 - All other searches query the local database directly
 
 ---
@@ -76,6 +76,8 @@ Patient Search Flow:
 
 Search by national_id / passport_id
   └──► Call Hospital External API (real-time)
+         ├── Result found   → return immediately
+         └── Error / no result → fallback: query local DB (error logged silently)
 
 Search by name / DOB / phone / email
   └──► Query patients table in our PostgreSQL DB
