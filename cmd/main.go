@@ -47,7 +47,7 @@ func main() {
 	}
 
 	r := gin.Default()
-	r.SetTrustedProxies([]string{"127.0.0.1"})
+	r.SetTrustedProxies(nil)
 
 	routes.Register(r, staffHandler, patientHandler, cfg)
 
