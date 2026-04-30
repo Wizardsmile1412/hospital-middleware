@@ -26,6 +26,7 @@ func (h *PatientHandler) SearchPatients(c *gin.Context) {
 		NationalID:  c.Query("national_id"),
 		PassportID:  c.Query("passport_id"),
 		FirstName:   c.Query("first_name"),
+		MiddleName:  c.Query("middle_name"),
 		LastName:    c.Query("last_name"),
 		DateOfBirth: c.Query("date_of_birth"),
 		PhoneNumber: c.Query("phone_number"),

@@ -25,6 +25,7 @@ type SearchPatientParams struct {
 	NationalID  string
 	PassportID  string
 	FirstName   string
+	MiddleName  string
 	LastName    string
 	DateOfBirth string
 	PhoneNumber string

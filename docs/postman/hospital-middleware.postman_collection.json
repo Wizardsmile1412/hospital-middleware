@@ -1,0 +1,324 @@
+{
+  "info": {
+    "name": "Hospital Middleware",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "API collection for hospital-middleware. After running Login, the access_token is automatically saved to the {{access_token}} collection variable."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:80",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "hospital_slug",
+      "value": "hospital-a",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Staff",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', body.access_token);",
+                  "    console.log('access_token saved:', body.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"staff01\",\n  \"password\": \"password123\",\n  \"hospital_slug\": \"{{hospital_slug}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/staff/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "staff", "login"]
+            },
+            "description": "Authenticates a staff member. On success returns access_token (also auto-saved to {{access_token}}) and sets a refresh_token HTTP-only cookie (7-day expiry)."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"access_token\": \"eyJhbGci...\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 900\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "401 Unauthorized",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"error\": \"invalid credentials\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "404 Hospital Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"error\": \"hospital not found\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Create Staff",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"staff01\",\n  \"password\": \"password123\",\n  \"hospital_slug\": \"{{hospital_slug}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/staff/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "staff", "create"]
+            },
+            "description": "Creates a new staff account under the specified hospital. No auth required."
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Staff created successfully\",\n  \"staff_id\": \"uuid\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "400 Bad Request",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"error\": \"Key: 'CreateStaffRequest.Username' Error:Field validation for 'Username' failed on the 'required' tag\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "404 Hospital Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"error\": \"hospital not found\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "409 Username Taken",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"error\": \"username already taken\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', body.access_token);",
+                  "    console.log('access_token refreshed:', body.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/staff/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "staff", "refresh"]
+            },
+            "description": "Uses the refresh_token HTTP-only cookie set by Login to issue a new access_token. No request body needed — Postman sends the cookie automatically if 'Send cookies' is enabled. The new access_token is auto-saved to {{access_token}}."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"access_token\": \"eyJhbGci...\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 900\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "401 Unauthorized",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"error\": \"refresh token missing or invalid\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Patient",
+      "item": [
+        {
+          "name": "Search Patients",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "description": "JWT access token — run Login first to populate {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/patient/search?national_id=&passport_id=&first_name=&middle_name=&last_name=&date_of_birth=&phone_number=&email=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "patient", "search"],
+              "query": [
+                {
+                  "key": "national_id",
+                  "value": "",
+                  "description": "Thai national ID (13 digits)",
+                  "disabled": true
+                },
+                {
+                  "key": "passport_id",
+                  "value": "",
+                  "description": "Passport number",
+                  "disabled": true
+                },
+                {
+                  "key": "first_name",
+                  "value": "",
+                  "description": "First name (Thai or English)",
+                  "disabled": true
+                },
+                {
+                  "key": "middle_name",
+                  "value": "",
+                  "description": "Middle name (Thai or English)",
+                  "disabled": true
+                },
+                {
+                  "key": "last_name",
+                  "value": "",
+                  "description": "Last name (Thai or English)",
+                  "disabled": true
+                },
+                {
+                  "key": "date_of_birth",
+                  "value": "",
+                  "description": "Date of birth (YYYY-MM-DD)",
+                  "disabled": true
+                },
+                {
+                  "key": "phone_number",
+                  "value": "",
+                  "description": "Phone number",
+                  "disabled": true
+                },
+                {
+                  "key": "email",
+                  "value": "",
+                  "description": "Email address",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Search patients by one or more query parameters. Requires a valid JWT Bearer token. hospital_id is inferred automatically from the token claims — no need to pass it manually. Enable only the params you want to filter by."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"patients\": [\n    {\n      \"id\": \"uuid\",\n      \"hospital_id\": \"uuid\",\n      \"national_id\": \"1234567890123\",\n      \"passport_id\": null,\n      \"first_name_th\": \"สมชาย\",\n      \"middle_name_th\": null,\n      \"last_name_th\": \"ใจดี\",\n      \"first_name_en\": \"Somchai\",\n      \"middle_name_en\": null,\n      \"last_name_en\": \"Jaidee\",\n      \"date_of_birth\": \"1990-01-15T00:00:00Z\",\n      \"patient_hn\": \"HN001234\",\n      \"phone_number\": \"0812345678\",\n      \"email\": \"somchai@example.com\",\n      \"gender\": \"M\",\n      \"created_at\": \"2024-01-01T00:00:00Z\"\n    }\n  ],\n  \"total\": 1\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "401 Unauthorized",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"error\": \"missing or invalid token\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
