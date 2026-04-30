@@ -44,6 +44,14 @@ func (r *patientRepo) SearchPatients(ctx context.Context, params model.SearchPat
 		args = append(args, "%"+params.FirstName+"%")
 		idx++
 	}
+	if params.MiddleName != "" {
+		conditions = append(conditions, fmt.Sprintf(
+			"(LOWER(middle_name_th) LIKE LOWER($%d) OR LOWER(middle_name_en) LIKE LOWER($%d))",
+			idx, idx,
+		))
+		args = append(args, "%"+params.MiddleName+"%")
+		idx++
+	}
 	if params.LastName != "" {
 		conditions = append(conditions, fmt.Sprintf(
 			"(LOWER(last_name_th) LIKE LOWER($%d) OR LOWER(last_name_en) LIKE LOWER($%d))",
