@@ -40,7 +40,7 @@ services:
     environment:
       SERVER_PORT: ${SERVER_PORT}
     volumes:
-      - ./nginx.conf:/etc/nginx/templates/nginx.conf.template:ro
+      - ./nginx.conf:/etc/nginx/templates/default.conf.template:ro
     depends_on:
       - app
 
